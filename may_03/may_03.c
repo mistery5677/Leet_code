@@ -1,105 +1,50 @@
 #include <stdio.h>
 #include <string.h>
 
-int finish1(char *version1, int start)
+int clear_zero(char *version, int start)
 {
-    if(version1[start - 1] == '0')
-    {
-        while(version1[start])
-        {
-            if(version1[start] != '0' && version1[start] != '.')
-                return 1;
-            start++;
-        }
-    }
-    else
-        return 1;
-    return 0;
+    if(version[start] == '.')
+        start++;
+    while(version[start] == '0')
+        start++;
+    if (version[start] == '.' || version[start] == NULL)
+        start--;
+    return start;
 }
 
-int finish2(char *version2, int start)
+int value(char *version, int start)
 {
-    if(version2[start - 1] == '0')
+    int value = 0;
+    while(version[start] && version[start] != '.')
     {
-        while(version2[start])
-        {
-            if(version2[start] != '0' && version2[start] != '.')
-                return -1;
-            start++;
-        }
+        value += (value * 10) + version[start];
+        start++;  
     }
-    else
-        return -1;
-    return 0;
+    return value;
 }
-/*
-int compareVersion(char* version1, char* version2) {
-    size_t i = 0;
-    size_t j = 0;
-
-    while(version1[i] == '0')
-        i++;
-    while(version2[j] == '0')
-        j++;
-    if(version1[i] > version2[j])
-        return 1;
-    if(version1[i] < version2[j])
-        return -1;
-    while (version1[i] && version2[j])
-    {
-        while(version1[i] == '0')
-            i++;
-        while(version2[j] == '0')
-            j++;
-        if(i == strlen(version1) || j == strlen(version2))
-            break;
-        if(version1[i] > version2[j])
-        {
-            printf("len %zu\n i: %zu\n", strlen(version1), i);
-            return 1;
-        }
-        if(version1[i] < version2[j])
-            return -1;
-        i++;
-        j++;
-    }
-    printf("len %zu\n i: %zu\n", strlen(version1), i);
-    if (i < strlen(version1))
-        return finish1(version1, i);
-    if (j < strlen(version2))
-        return finish2(version2, j);
-    return 0;
-} */
 
 int compareVersion(char* version1, char* version2)
 {
-    size_t i = 0;
-    size_t j = 0;
+    size_t i = clear_zero(version1, 0);
+    size_t j = clear_zero(version2, 0);
+    int v1_value = 0;
+    int v2_value = 0;
 
     while(version1[i] && version2[j])
     {
-        while(version1[i] == '0' && (version1[i + 1] != '.' && version1[i + 1] != NULL))
-            i++;
-        while(version2[j] == '0' && (version2[j + 1] != '.' && version2[j + 1] != NULL))
-            j++;
+        v1_value = value(version1, i);
+        v2_value = value(version2, j);
+        if(v1_value > v2_value)
+            return 1;
+        else if(v1_value < v2_value)
+            return -1;
         while(version1[i] != '.' && version1[i])
-        {
-            if(version1[i] > version2[j])
-                return 1;
-            else if(version1[i] < version2[j])
-                return -1;
             i++;
+        while(version2[j] != '.' && version2[j])
             j++;
-        }
-        if(version1[i] == NULL || version2[j] == NULL)
-            break;
-        i++;
-        j++;
+        i = clear_zero(version1, i);
+        j = clear_zero(version2, j);
     }
-    if (i < strlen(version1))
-        return finish1(version1, i);
-    if (j < strlen(version2))
-        return finish2(version2, j);
     return 0;
 }
 
