@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* int finish1(char *version1, int start)
+int finish1(char *version1, int start)
 {
     if(version1[start - 1] == '0')
     {
@@ -32,7 +32,7 @@ int finish2(char *version2, int start)
         return -1;
     return 0;
 }
-
+/*
 int compareVersion(char* version1, char* version2) {
     size_t i = 0;
     size_t j = 0;
@@ -78,9 +78,9 @@ int compareVersion(char* version1, char* version2)
 
     while(version1[i] && version2[j])
     {
-        while(version1[i] == '0')
+        while(version1[i] == '0' && (version1[i + 1] != '.' && version1[i + 1] != NULL))
             i++;
-        while(version2[j] == '0')
+        while(version2[j] == '0' && (version2[j + 1] != '.' && version2[j + 1] != NULL))
             j++;
         while(version1[i] != '.' && version1[i])
         {
@@ -91,12 +91,19 @@ int compareVersion(char* version1, char* version2)
             i++;
             j++;
         }
+        if(version1[i] == NULL || version2[j] == NULL)
+            break;
         i++;
         j++;
     }
+    if (i < strlen(version1))
+        return finish1(version1, i);
+    if (j < strlen(version2))
+        return finish2(version2, j);
     return 0;
 }
 
+// proxima tentativa tentar juntar o numero num = num * version * 10
 int main()
 {
     char *version1 = "1.2";
