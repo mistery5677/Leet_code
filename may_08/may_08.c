@@ -3,71 +3,58 @@
 #include <string.h>
 
 char** findRelativeRanks(int* score, int scoreSize, int* returnSize) {
-    
     // Malloc all the array of strings
     *returnSize = scoreSize;
     char **result = (char **)malloc(scoreSize * sizeof(char*));
-    if(!result)
+    if (!result)
         return NULL;
-    for (int i = 0; i < scoreSize; i++)
-    {
+    for (int i = 0; i < scoreSize; i++) {
         result[i] = (char *)malloc(13 * sizeof(char));
-        if (!result[i])
+        if (!result[i]) {
+            // Handle memory allocation failure
+            for (int j = 0; j < i; j++)
+                free(result[j]);
+            free(result);
             return NULL;
+        }
     }
 
     // Rank the scores
-    for(int i = 0; i < scoreSize; i++)
-    {
+    for (int i = 0; i < scoreSize; i++) {
         int rank = 1;
-        for(int j = 0; j < scoreSize; j++)
-            if (score[i] < score [j])
+        for (int j = 0; j < scoreSize; j++)
+            if (score[i] < score[j])
                 rank++;
-        if (rank == 1)
-            result[i] = "Gold medal";
-        else if (rank == 2)
-            result[i] = "silver medal";
-        else if(rank == 3)
-            result[i] = "Bronze medal";
-        else 
-            result[i] = rank + '0';
+        if (rank == 1) {
+            strcpy(result[i], "Gold medal");
+        } else if (rank == 2) {
+            strcpy(result[i], "Silver medal");
+        } else if (rank == 3) {
+            strcpy(result[i], "Bronze medal");
+        } else {
+            sprintf(result[i], "%d", rank);
+        }
     }
     return result;
 }
 
-char **findRelativeRanks(int *score, int scoreSize, int *returnSize)
-{
-  // Rank every element of score array
-  int rank[scoreSize];
-  for (int i = 0; i < scoreSize; i++)
-  {
-    int el_rank = 1;
+int main() {
+		int scores[] = {5, 8, 2, 6, 9};
+		int size = sizeof(scores) / sizeof(scores[0]);
 
-    for (int j = 0; j < scoreSize; j++)
-      if (score[j] > score[i])
-        el_rank++;
+		int returnSize;
+		char **result = findRelativeRanks(scores, size, &returnSize);
 
-    rank[i] = el_rank;
-  }
+		printf("Relative Ranks:\n");
+		for (int i = 0; i < returnSize; i++) {
+				printf("%s\n", result[i]);
+		}
 
-  // malloc
-  *returnSize = scoreSize;
-  char **res = (char **)malloc((*returnSize) * sizeof(char *));
-  for (int i = 0; i < (*returnSize); i++)
-    res[i] = (char *)malloc(13 * sizeof(char));
+		// Free memory
+		for (int i = 0; i < returnSize; i++) {
+				free(result[i]);
+		}
+		free(result);
 
-  // Fill res based on rank
-  for (int i = 0; i < scoreSize; i++)
-  {
-    if (rank[i] > 3)
-      sprintf(res[i], "%d", rank[i]);
-    else if (rank[i] == 3)
-      res[i] = "Bronze Medal";
-    else if (rank[i] == 2)
-      res[i] = "Silver Medal";
-    else if (rank[i] == 1)
-      res[i] = "Gold Medal";
-  }
-
-  return res;
+		return 0;
 }
